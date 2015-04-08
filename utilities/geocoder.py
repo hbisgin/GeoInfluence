@@ -25,11 +25,11 @@ class Geocoder:
         return state_abbr_dict
 
     def geocode(self, location_text):
-        match = re.match('\s?(\w+)\s?,\s?(\w+)\s?', location_text.lower())
+        match = re.match('\s*(\w+)\s*,\s*(\w+\.?\w+\.?)\s?', location_text.lower())
         if match == None:
             return None
         else:
-            state = match.group(2)
+            state = re.sub('\.','',match.group(2))
             city = match.group(1)
             if state in self.state_abbr_dict:
                 """ full name -> abbr """
