@@ -44,7 +44,7 @@
 
       queue()
           .defer(d3.json, 'data.json')
-          .defer(d3.json, '../utilities/geodata/us-states.json')
+          .defer(d3.json, 'us-states.json')
           .await(makeMap)
 
       function makeMap(error, data_1,gjson_1) {
