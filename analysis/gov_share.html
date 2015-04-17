@@ -43,7 +43,7 @@
    <script>
 
       queue()
-          .defer(d3.json, 'data.json')
+          .defer(d3.json, 'govshare.json')
           .defer(d3.json, 'us_states.geojson')
           .await(makeMap)
 
