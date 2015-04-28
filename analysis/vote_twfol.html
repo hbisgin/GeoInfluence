@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <head>
    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
-   <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
-   <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
-   <script src="//cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
 
    
    
@@ -44,8 +44,15 @@
 
       queue()
           .defer(d3.json, 'vote_twfol.json')
-          .defer(d3.json, '../utilities/geodata/us-states.json')
+          .defer(d3.json, 'us_states.geojson')
           .await(makeMap)
+
+      function onEachFeature(feature, layer) {
+          // does this feature have a property named popupContent?
+          if (feature.properties && feature.properties.popupContent) {
+              layer.bindPopup(feature.properties.popupContent);
+              }
+          };
 
       function makeMap(error, data_1,gjson_1) {
 
@@ -64,27 +71,17 @@
 
           
           var color = d3.scale.threshold()
-              .domain([10, 20, 40, 60, 80, 90])
+              .domain([5, 10, 15, 20, 30, 40])
               .range(['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8', '#0C2C84']);
           
 
           var map = L.map('map').setView([40, -99], 4);
 
-          L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
               maxZoom: 18,
               minZoom: 1,
               attribution: 'Map data (c) <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
           }).addTo(map);
-
-          
-
-          
-
-          
-
-          
-
-          
 
           
           function style_1(feature) {
@@ -99,7 +96,7 @@
           
 
           
-          gJson_layer_1 = L.geoJson(gjson_1, {style: style_1}).addTo(map)
+          gJson_layer_1 = L.geoJson(gjson_1, {style: style_1,onEachFeature: onEachFeature}).addTo(map)
           
 
           
@@ -110,14 +107,14 @@
     legend.addTo(map);
 
     var x = d3.scale.linear()
-    .domain([0, 99])
+    .domain([0, 44])
     .range([0, 400]);
 
     var xAxis = d3.svg.axis()
         .scale(x)
         .orient("top")
         .tickSize(1)
-        .tickValues([10, 20, 40, 60, 80, 90]);
+        .tickValues([5, 10, 15, 20, 30, 40]);
 
     var svg = d3.select(".legend.leaflet-control").append("svg")
         .attr("id", 'legend')
@@ -148,6 +145,15 @@
         .text('The Difference Between Governors Vote Share & Twitter Follower Share (%)');
           
 
+          
+
+          
+
+          
+
+          
+
+          
       };
 
    </script>
