@@ -11,7 +11,76 @@ import os,sys
 lib_path = os.path.abspath(os.path.join('..'))
 sys.path.append(lib_path)
 
+with open('../utilities/geodata/us-states.json', 'r') as infile:
+    geoState = json.load(infile)
+ 
+stateIndex = {}
+for i in range(50):
+    stateIndex[geoState['features'][i]['properties']['name']] = i
+        
+def getPolies(state):
+    if(geoState['features'][stateIndex[state]]['geometry']['type']=='MultiPolygon'):
+        print(state)
+        return geoState['features'][stateIndex[state]]['geometry']['coordinates'][0]
+    return geoState['features'][stateIndex[state]]['geometry']['coordinates']
 
+    
+    
+    
+from mpl_toolkits.basemap import Basemap
+from matplotlib.path import Path
+
+# Mercator Projection
+# http://matplotlib.org/basemap/users/merc.html
+m = Basemap(width=12000000,height=9000000,projection='lcc',
+            resolution='c',lat_1=45.,lat_2=55,lat_0=50,lon_0=-107.)
+
+with open('../data/geocoded.json', 'r') as infile:
+    codes = json.load(infile)
+
+insratio = {}
+for state in codes.keys():
+    instate = 0
+    outstate = 0
+    # Poly vertices
+    polies = getPolies(state)
+    paths = []
+    for p in polies:
+        # Projected vertices
+        p_projected = [m(x[1], x[0]) for x in p]
+        # Create the Path
+        p_path = Path(p_projected)
+        paths.append(p_path)
+    # Test points
+    for latlon,cnt in codes[state]['flocs'].items():
+        lat,lon=latlon.split(',')
+        # Test point projection
+        p1 = m(float(lat),float(lon))
+        insider = False
+        for p_path in paths:
+            if p_path.contains_point(p1) > 0:
+                instate += cnt
+                insider = True
+                break
+        if insider==False :
+            outstate += cnt
+    insratio[state] = instate / (instate + outstate)
+
+
+def json2csv():
+    import csv
+    with open('../data/geocoded.json', 'r') as infile:
+        codes = json.load(infile)
+
+    with open('../data/eggs.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['x','y','cnt','state'])
+        for state in codes.keys():
+            for latlon,cnt in codes[state]['flocs'].items():
+                x,y=latlon.split(',')
+                writer.writerow([x,y,cnt,state])
+        
+    
 def joinFileNamesWithDF():
     import pandas as pd
     path = '../raw_data/'

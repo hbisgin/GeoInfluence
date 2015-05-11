@@ -71,8 +71,8 @@
 
           
           var color = d3.scale.threshold()
-              .domain([50.0, 60.0, 60.0, 60.0, 70.0])
-              .range(['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256']);
+              .domain([45, 50, 55, 60, 65, 70])
+              .range(['#F1EEF6', '#D4B9DA', '#C994C7', '#DF65B0', '#E7298A', '#CE1256', '#91003F']);
           
 
           var map = L.map('map').setView([40, -99], 4);
@@ -114,7 +114,7 @@
         .scale(x)
         .orient("top")
         .tickSize(1)
-        .tickValues([50.0, 60.0, 60.0, 60.0, 70.0]);
+        .tickValues([45, 50, 55, 60, 65, 70]);
 
     var svg = d3.select(".legend.leaflet-control").append("svg")
         .attr("id", 'legend')
